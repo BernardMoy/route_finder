@@ -26,21 +26,19 @@ for index, row in df.iterrows():
     if not pd.isna(row["Line"]):
         line = row["Line"]
         prev_station = None  # Reset prev station, as a new line is selected
-        
+
     station = row["Station"]
     time = row["Time"]
 
     # Skip empty rows
     if pd.isna(station) or pd.isna(time):
-        print(f"Skipping empty row number {index}")
+        print(f"Skipping empty row number {index+2}")
         continue
 
     # Add an edge to the graph
-    if not prev_line:
-        prev_line = line
 
     if prev_station:
-        G.add_edge(prev_station, station, weight = float(time), line = str(line))
+        G.add_edge(prev_station, station, weight = float(time), line = str(line))  # only executes if there is a prev station, i.e. Not new line
 
     prev_station = station
 
@@ -56,12 +54,12 @@ import matplotlib.pyplot as plt
 pos = nx.spring_layout(G)
 
 # Draw the graph
-plt.figure(figsize=(12, 8))
+plt.figure(figsize=(64,8))
 
 # pip install https://github.com/paulbrodersen/netgraph/archive/dev.zip
 from netgraph import MultiGraph 
 
 labels = {(u, v, k): f'{G[u][v][k]["weight"]}' for u, v, k in G.edges(keys=True)}
-MultiGraph(G, node_labels=True, edge_labels=labels, edge_color='tab:blue')
+plot_instance = MultiGraph(G, node_labels=True, edge_labels=labels, edge_color='tab:blue')
 
 plt.show()
