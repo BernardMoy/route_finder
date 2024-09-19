@@ -13,6 +13,9 @@ stations_list = list(stations_data)
 # Add the stations node to the graph
 G.add_nodes_from(stations_list)
 
+# Add the station codes to the dict
+code_to_station = pd.Series(df.Station_name.values, index=df.Station_code).to_dict()
+print(code_to_station)
 
 
 # Keep track of the previous line and previous station
@@ -44,7 +47,14 @@ for index, row in df.iterrows():
 
 print("Graph edges with attributes:", G.edges(data=True))
 
+# Function to find the shortest 
+def shortest(code_start : str, code_end : str) -> str:
+    return ""
 
+# Ask input for the start and end stations
+print("========================================")
+code_start = input("Enter start station name / code:")
+code_end = input("Enter end station name / code:")
 
 
 # Draw the graph
