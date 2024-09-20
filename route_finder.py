@@ -1,25 +1,19 @@
-import networkx as nx
 import pandas as pd
 import sys
+from collections import defaultdict
 
-G = nx.MultiGraph()
+# Graph is defined here
+G = defaultdict(list)
 
 # Read from the excel data
 df = pd.read_excel("stations_data.xlsx")
-
-# Extract all stations data to be used to create graph
-stations_data = df["Station"].dropna().replace("", None).unique()
-stations_list = list(stations_data)
-
-# Add the stations node to the graph
-G.add_nodes_from(stations_list)
 
 # Add the station codes to the dict
 code_to_station = pd.Series(df.Station_name.values, index=df.Station_code).to_dict()
 station_to_code = pd.Series(df.Station_code.values, index=df.Station_name).to_dict()
 station_lower_to_code = pd.Series(df.Station_code.values, index=df.Station_name.str.lower()).to_dict()
-stations_set = set([key for key, _ in station_to_code.items()])
 
+# Add the line codes to the dict
 code_to_line = pd.Series(df.Line_name.values, index=df.Line_code).to_dict()
 
 
@@ -46,11 +40,13 @@ for index, row in df.iterrows():
     # Add an edge to the graph
 
     if prev_station:
-        G.add_edge(prev_station, station, weight = float(time), line = str(line))  # only executes if there is a prev station, i.e. Not new line
+        # only executes if there is a prev station, i.e. Not new line
+        G[prev_station].append((station, float(time), str(line)))
+        G[station].append((prev_station, float(time), str(line)))
 
     prev_station = station
 
-print("Graph edges with attributes:", G.edges(data=True))
+print(G)
 
 # Function to find the shortest 
 def shortest(code_start : str, code_end : str) -> str:
@@ -101,20 +97,3 @@ if (code_start == code_end):
     print("**Start and end station cannot be the same!")
     sys.exit(1)
 
-
-# Draw the graph
-import matplotlib.pyplot as plt
-
-# Set positions for nodes
-pos = nx.spring_layout(G)
-
-# Draw the graph
-plt.figure(figsize=(64,8))
-
-# pip install https://github.com/paulbrodersen/netgraph/archive/dev.zip
-from netgraph import MultiGraph 
-
-labels = {(u, v, k): f'{G[u][v][k]["weight"]}' for u, v, k in G.edges(keys=True)}
-plot_instance = MultiGraph(G, node_labels=True, edge_labels=labels, edge_color='tab:blue')
-
-plt.show()
