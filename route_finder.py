@@ -153,13 +153,35 @@ def shortest(code_start : str, code_end : str) -> str:
 
     return (shortest_distance, path)
 
+
 # Call the shortest function here
 distance, path = shortest(code_start, code_end)
 
 # Round the distance
 distance = round(distance, 2)
 
+print("****** Route information ******")
 print(f"{code_to_station[code_start]} ({code_start}) -> {code_to_station[code_end]} ({code_end}): {distance} {time_unit}")
 
 # Print the path in formatted strings
-print(path)
+current_line = None
+current_line_count = 0
+current_time = 0
+current_time_elapsed = 0
+
+for (station, line, time) in path[:-1]:
+
+    # When a new line is supplied, print its header and also the next stop for the previous line
+    if line != current_line:
+        print(f"> {code_to_station[station]} --- Time elapsed: {current_time_elapsed} {time_unit}")
+        print("****************************************")
+        current_line = line
+        current_line_count += 1
+        print(f"{current_line_count}. {code_to_line[current_line]}")
+    
+    # Print station information
+    print(f"> {code_to_station[station]} --- Time elapsed: {current_time_elapsed} {time_unit}")
+    current_time_elapsed = time  # time elapsed is shifted one line downwards
+
+# Destination reached
+print(f"> {code_to_station[code_end]} --- Time elapsed: {current_time_elapsed} {time_unit}")
