@@ -17,6 +17,9 @@ station_lower_to_code = pd.Series(df.Station_code.values, index=df.Station_name.
 # Add the line codes to the dict
 code_to_line = pd.Series(df.Line_name.values, index=df.Line_code).to_dict()
 
+# Get the time unit
+time_unit = str(df["Time_unit"][0])
+
 
 # Keep track of the previous line and previous station
 prev_line = None
@@ -119,13 +122,13 @@ def shortest(code_start : str, code_end : str) -> str:
         for neighbour, neighbour_weight, neighbour_line in G[node]:
             if neighbour not in result:
                 result[neighbour] = result[node] + neighbour_weight   # Distance to reach node itself + distance to reach neighbour
-                previous[neighbour] = (node, neighbour_line)
+                previous[neighbour] = (node, neighbour_line, round(result[neighbour], 2))
 
             else:
                 new_distance = result[node] + neighbour_weight
                 if new_distance < result[neighbour]:
                     result[neighbour] = new_distance
-                    previous[neighbour] = (node, neighbour_line)  # add to previous only if the new distance is shorter
+                    previous[neighbour] = (node, neighbour_line, round(result[neighbour], 2))  # add to previous only if the new distance is shorter
         
             heapq.heappush(queue, (result[neighbour], neighbour))
 
@@ -135,18 +138,28 @@ def shortest(code_start : str, code_end : str) -> str:
     if code_end not in result:
         return f"{code_start} to {code_end} is unreachable!"
 
+    # Extarct the smallest distance (number)
     shortest_distance = result[code_end]
 
     # Trace back the entire path
     path = [code_end]
     current = code_end
     while current in previous:
-        station, line = previous[current]
-        path.append(station)
+        station, line, time = previous[current]
+        path.append((station, line, time))
         current = station
 
     path.reverse()
 
     return (shortest_distance, path)
 
-print(shortest(code_start, code_end))
+# Call the shortest function here
+distance, path = shortest(code_start, code_end)
+
+# Round the distance
+distance = round(distance, 2)
+
+print(f"{code_to_station[code_start]} ({code_start}) -> {code_to_station[code_end]} ({code_end}): {distance} {time_unit}")
+
+# Print the path in formatted strings
+print(path)
