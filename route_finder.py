@@ -1,5 +1,6 @@
 import pandas as pd
 import sys
+import heapq
 from collections import defaultdict
 
 # Graph is defined here
@@ -48,9 +49,6 @@ for index, row in df.iterrows():
 
 print(G)
 
-# Function to find the shortest 
-def shortest(code_start : str, code_end : str) -> str:
-    return ""
 
 # Ask input for the start station
 print("========================================")
@@ -63,8 +61,8 @@ while code_start.upper() not in code_to_station and code_start.lower() not in st
 
 # Station code entered
 if code_start.upper() in code_to_station:
-    entered_code = code_start.upper()
-    print(f"Start station: {code_to_station[entered_code]} ({entered_code})")
+    code_start = code_start.upper()
+    print(f"Start station: {code_to_station[code_start]} ({code_start})")
 
 # Station name entered
 else:
@@ -82,8 +80,8 @@ while code_end.upper() not in code_to_station and code_end.lower() not in statio
 
 # Station code entered
 if code_end.upper() in code_to_station:
-    entered_code = code_end.upper()
-    print(f"End station: {code_to_station[entered_code]} ({entered_code})")
+    code_end = code_end.upper()
+    print(f"End station: {code_to_station[code_end]} ({code_end})")
 
 # Station name entered
 else:
@@ -97,3 +95,39 @@ if (code_start == code_end):
     print("**Start and end station cannot be the same!")
     sys.exit(1)
 
+
+print("========================================")
+
+# Function to find the shortest 
+def shortest(code_start : str, code_end : str) -> str:
+    result = {code_start : 0}
+    queue = [(0, code_start)]
+    heapq.heapify(queue)
+
+    visited = set()
+
+    while queue:
+        distance, node = heapq.heappop(queue)
+
+        # Handle nodes that are already visited or are sink nodes
+        if node in visited or node not in G:
+            continue
+        
+        # Explore the node that is popped
+        for neighbour, neighbour_weight, neighbour_line in G[node]:
+            if neighbour not in result:
+                result[neighbour] = result[node] + neighbour_weight   # Distance to reach node itself + distance to reach neighbour
+            
+            else:
+                result[neighbour] = min(result[neighbour], result[node] + neighbour_weight)
+
+            heapq.heappush(queue, (result[neighbour], neighbour))
+
+        visited.add(node)
+
+    if code_end not in result:
+        return f"{code_start} to {code_end} is unreachable!"
+
+    return result[code_end]
+
+print(shortest(code_start, code_end))
