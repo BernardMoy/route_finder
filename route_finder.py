@@ -104,7 +104,9 @@ def shortest(code_start : str, code_end : str) -> str:
     queue = [(0, code_start)]
     heapq.heapify(queue)
 
-    visited = set()
+    previous = {}  # Keep track of the previous value in the form of {code_start : (code_end, line)}
+
+    visited = set()  # Set to keep track of visited station codes
 
     while queue:
         distance, node = heapq.heappop(queue)
@@ -117,17 +119,34 @@ def shortest(code_start : str, code_end : str) -> str:
         for neighbour, neighbour_weight, neighbour_line in G[node]:
             if neighbour not in result:
                 result[neighbour] = result[node] + neighbour_weight   # Distance to reach node itself + distance to reach neighbour
-            
-            else:
-                result[neighbour] = min(result[neighbour], result[node] + neighbour_weight)
+                previous[neighbour] = (node, neighbour_line)
 
+            else:
+                new_distance = result[node] + neighbour_weight
+                if new_distance < result[neighbour]:
+                    result[neighbour] = new_distance
+                    previous[neighbour] = (node, neighbour_line)  # add to previous only if the new distance is shorter
+        
             heapq.heappush(queue, (result[neighbour], neighbour))
 
         visited.add(node)
 
+    # If end is not in the result dict, the node is unreachable
     if code_end not in result:
         return f"{code_start} to {code_end} is unreachable!"
 
-    return result[code_end]
+    shortest_distance = result[code_end]
+
+    # Trace back the entire path
+    path = [code_end]
+    current = code_end
+    while current in previous:
+        station, line = previous[current]
+        path.append(station)
+        current = station
+
+    path.reverse()
+
+    return (shortest_distance, path)
 
 print(shortest(code_start, code_end))
