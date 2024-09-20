@@ -166,22 +166,35 @@ print(f"{code_to_station[code_start]} ({code_start}) -> {code_to_station[code_en
 # Print the path in formatted strings
 current_line = None
 current_line_count = 0
+current_station_count = 0
 current_time = 0
 current_time_elapsed = 0
+previous_time_elapsed = 0
 
 for (station, line, time) in path[:-1]:
 
     # When a new line is supplied, print its header and also the next stop for the previous line
     if line != current_line:
-        print(f"> {code_to_station[station]} --- Time elapsed: {current_time_elapsed} {time_unit}")
+        if current_line:
+            # This is to ensure that the first line isnt printed when current line is still None
+            print(f"> {code_to_station[station]} --- Time elapsed: {current_time_elapsed} {time_unit}")
+
+            # Print information about the number of stations
+            print(f"{current_station_count} stations, {round(current_time_elapsed - previous_time_elapsed, 2)} {time_unit}")
+            
         print("****************************************")
         current_line = line
+        previous_time_elapsed = current_time_elapsed
         current_line_count += 1
+        current_station_count = 0
         print(f"{current_line_count}. {code_to_line[current_line]}")
     
     # Print station information
     print(f"> {code_to_station[station]} --- Time elapsed: {current_time_elapsed} {time_unit}")
     current_time_elapsed = time  # time elapsed is shifted one line downwards
+    current_station_count += 1  # Increment the station count every time
 
 # Destination reached
 print(f"> {code_to_station[code_end]} --- Time elapsed: {current_time_elapsed} {time_unit}")
+print(f"{current_station_count} stations, {round(current_time_elapsed - previous_time_elapsed, 2)} {time_unit}")
+print("****************************************")
