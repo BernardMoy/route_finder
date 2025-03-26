@@ -28,19 +28,21 @@ To configure the units of the numbers provides (such as s, min), add that under 
 
 # Running the code
 To run the code:
-```python route_finder.py```
+```
+python route_finder.py
+```
 
 Example output:
 ```
 ========================================
-Enter start station name / code:Beach
+Enter start station name / code:bea
 Start station: Beach (BEA)
 ========================================
-Enter end station name / code:depot
+Enter end station name / code:dep
 End station: Depot (DEP)
 ========================================
 ****** Route information ******
-Beach (BEA) -> Depot (DEP): 130.0 s
+Beach (BEA) -> Depot (DEP): 150.0 s
 ****************************************
 1. Pier line
 > Beach --- Time elapsed: 0 s
@@ -54,7 +56,8 @@ Beach (BEA) -> Depot (DEP): 130.0 s
 ****************************************
 3. City line
 > Park --- Time elapsed: 95.0 s
-> Depot --- Time elapsed: 130.0 s
-1 stations, 35.0 s
+> Castle --- Time elapsed: 115.0 s
+> Depot --- Time elapsed: 150.0 s
+2 stations, 55.0 s
 ****************************************
 ```
