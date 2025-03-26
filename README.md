@@ -24,6 +24,14 @@ Then, configure the routes:
 - Start a different line by separating them with a blank row.
 - All routes are assumed to be bidirectional.
 
+Example: PIE ---55--- CEN ---25--- TOW ---50--- BEA is represented by 
+| Line    | Station | Time
+| -------- | ------- | ------- |
+| PIEL  | PIE    | 0 |
+|   | CEN  | 55 |
+|   | TOW  | 25 |
+|   | BEA  | 50 |
+
 To configure the units of the numbers provides (such as s, min), add that under the `Time_unit` column
 
 # Running the code
